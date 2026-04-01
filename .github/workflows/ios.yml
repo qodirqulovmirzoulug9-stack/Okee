@@ -12,18 +12,19 @@ jobs:
           channel: 'stable'
           flutter-version: '3.19.0'
       
-      # iOS papkasini noldan to'g'ri yaratish
+      # iOS platformasini noldan sozlash
       - run: flutter create . --platforms=ios --project-name=okee
       
       - run: flutter pub get
       
-      # IPA faylini yig'ish (build)
+      # IPA yig'ish (bu bosqich kamida 5-10 daqiqa olishi kerak)
       - name: Build IPA
         run: flutter build ipa --no-codesign --release
-        
-      # Tayyor faylni GitHub-ga yuklash (Artifacts bo'limiga)
+
+      # MUHIM: Faylni topish uchun butun build papkasini ko'rsatamiz
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Okee-App-IPA
-          path: build/ios/ipa/*.ipa  # Fayl aynan shu yerda bo'ladi
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error # Agar fayl topilmasa, xato bersin (shunda sababini ko'ramiz)

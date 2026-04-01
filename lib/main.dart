@@ -16,22 +16,30 @@ class _AIChatState extends State<AIChat> {
   final String key = "Gsk_WR9V9HvIRSf2E5lOITgJWGdyb3FYFs4koyp75qqZQULggRxJEXzy";
 
   Future<void> ask(String text) async {
+    if (text.isEmpty) return;
     setState(() => _res = "Oylayapman...");
-    final r = await http.post(Uri.parse('https://api.groq.com/openai/v1/chat/completions'),
-      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $key'},
-      body: jsonEncode({'model': 'mixtral-8x7b-32768', 'messages': [{'role': 'user', 'content': text}]}),
-    );
-    setState(() => _res = jsonDecode(r.body)['choices'][0]['message']['content']);
+    try {
+      final r = await http.post(Uri.parse('https://api.groq.com/openai/v1/chat/completions'),
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $key'},
+        body: jsonEncode({
+          'model': 'mixtral-8x7b-32768', 
+          'messages': [{'role': 'user', 'content': text}]
+        }),
+      );
+      setState(() => _res = jsonDecode(r.body)['choices'][0]['message']['content']);
+    } catch (e) {
+      setState(() => _res = "Xatolik yuz berdi!");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Groq AI IPA")),
+      appBar: AppBar(title: const Text("Okee AI Chat"), backgroundColor: Colors.blueAccent),
       body: Column(children: [
         Expanded(child: SingleChildScrollView(child: Padding(padding: const EdgeInsets.all(20), child: Text(_res)))),
-        Padding(padding: const EdgeInsets.all(10), child: Row(children: [
-          Expanded(child: TextField(controller: _controller)),
+        Padding(padding: const EdgeInsets.all(15), child: Row(children: [
+          Expanded(child: TextField(controller: _controller, decoration: const InputDecoration(hintText: "Xabar yozing..."))),
           IconButton(icon: const Icon(Icons.send), onPressed: () => ask(_controller.text)),
         ]))
       ]),
